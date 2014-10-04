@@ -56,25 +56,28 @@
 	</script>
 </head>
 
-<body data-spy="scroll" data-offset="0" data-target="#navbar-main" onload="parseInit()"> 
-	<div id="headerwrap" id="home" name="home">
-		<br>
-    	<form onSubmit="JavaScript:submitThought()">
-			<input type="text" id="thoughtBox" name="thought_box" placeholder="What are you thinking?" /><br>
-			<input type="text" id="aliasBox" name="alias_box" placeholder="alias" /><br>
-      <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="send to cloud" /></a>
-		</form>
-
-	</div>
-
+<body data-spy="scroll" data-offset="0" onload="parseInit()"> 
+	<div id="headerwrap">
+   <form onSubmit="JavaScript:submitThought()">
+    <h2> What are you thinking? </h2> 
+    <br> 
+      <div> 
+       <input type="text" id="thoughtBox" name="thought_box" placeholder="What are you thinking?" /><br>
+       </div> 
+       <br> 
+      <div> 
+         <input type="text" id="aliasBox" name="alias_box" placeholder="alias" /><br>
+      </div> 
+      <br> 
+      <div> 
+         <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="send to cloud" /></a>
+      </div> 
+    </form>
+  </div>
 
   <div class="container" id="results" name="results">
-      <div class="row white">
-       <br>
-       <h1 class="centered">7 THOUGHTS ARE WITH YOU</h1>
-       <p> 
-       <!-- FILL WITH WHITESPACE? --> 
-     </div><!-- row -->
+   <h1 class="centered">7 THOUGHTS ARE WITH YOU</h1>
+  </div> 
 
 </body>
 </html>

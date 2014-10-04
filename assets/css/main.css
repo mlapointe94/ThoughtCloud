@@ -29,11 +29,21 @@ body {
 #thoughtBox{
   height:30px;
   width:50%;
-  border-bottom:1px solid #C0C0C0;
+  border:1px solid #C0C0C0;
   padding-top:5px;
   margin-left:auto;
   margin-right:auto; 
   margin-top:auto; 
+}
+
+#aliasBox{ 
+  height:30px;
+  width:30%;
+  border:1px solid #C0C0C0;
+  padding-top:5px;
+  margin-left:auto;
+  margin-right:auto; 
+  margin-top:auto;    
 }
 
 #results { 
@@ -251,11 +261,6 @@ blockquote cite:before {
     content: "-- "
 }
 
-/* Images */
-.overflow-image {
-    margin-top: -65px;
-}
-
 /* Links */
 a {
     color: #3498db;
@@ -291,6 +296,7 @@ a:after {
    ========================================================================== */
 
 #headerwrap {
+    height:100vh;
 	background: url(../img/header_bg.jpg) no-repeat center top;
 	margin-top: -50px;
 	padding-top:180px;
