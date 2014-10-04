@@ -32,13 +32,14 @@
 	function parseInit() {
 		Parse.initialize("k5ytQPE1ZXYSfBfxqKQCpGP124STSxdIXeopuTLp", "JOeN7E26XVxZ5vW8OIaANeyXEMU5lBLNF8s4BoLa");
 
+		var thoughtValue = document.getElementById('thoughtBox').value;
+		var aliasValue = document.getElementById('aliasBox').value;
+
 		var TestObject = Parse.Object.extend("TestObject");
 		var testObject = new TestObject();
-		testObject.save({foo: "bar"}).then(function(object) {
+		testObject.save({alias: aliasValue, thought: thoughtValue}).then(function(object) {
 			alert("yay! it worked");
 		});
-
-		//document.getElementById('textBox').value = document.getElementById('textBox').value + "me";
 	}
 	</script>
 </head>
@@ -50,7 +51,9 @@
 		</header>	    
 		<br>
     	<form>
-			<input type="text" id="textBox" name="firstname" /><br>
+			Thought:<br>
+			<input type="text" id="thoughtBox" name="thought_box" /><br>
+			Alias: <input type="text" id="aliasBox" name="alias_box" /><br>
 			<input type="button" onclick="parseInit()" id="test_parse_btn" value="Test Parse" />
 		</form>
 		<br> 
