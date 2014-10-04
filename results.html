@@ -22,16 +22,20 @@
 
 	<script src="assets/js/jquery.min.js"></script>
 	<script type="text/javascript" src="assets/js/modernizr.custom.js"></script>
+	<script src="assets/js/test.js"></script>
 
 </head>
 
-<body data-spy="scroll" data-offset="0" data-target="#navbar-main"> 
+<body data-spy="scroll" data-offset="0" data-target="#navbar-main" onload="test2()"> 
 	<div id="headerwrap" id="home" name="home">
 		<header class="clearfix">
 			<h2><span>RESULTS PAGE</span></h2>
 		</header>	  
 		<br> 
 		<button onclick="location.href = 'index.html';" id="myButton" class="float-left submit-button" >Home</button>
+		<div id="result_text">
+			This text will change
+		</div>
 	</div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
