@@ -31,20 +31,30 @@
 	<script type="text/javascript">
 	function parseInit() {
 		Parse.initialize("k5ytQPE1ZXYSfBfxqKQCpGP124STSxdIXeopuTLp", "JOeN7E26XVxZ5vW8OIaANeyXEMU5lBLNF8s4BoLa");
+	}
 
+	function submitThough() {
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
 
-		var TestObject = Parse.Object.extend("TestObject");
-		var testObject = new TestObject();
-		testObject.save({alias: aliasValue, thought: thoughtValue}).then(function(object) {
-			alert("yay! it worked");
+		var ThoughtObject = Parse.Object.extend("ThoughtObject");
+		var thoughtObject = new ThoughtObject();
+		thoughtObject.save({
+			alias: aliasValue,
+			thought: thoughtValue
+		}, {
+			success: function(thoughtObject) {
+				alert("yay! it worked");
+			},
+			error: function(thoughtObject, error) {
+				alert("Oh no!");
+			}
 		});
 	}
 	</script>
 </head>
 
-<body data-spy="scroll" data-offset="0" data-target="#navbar-main"> 
+<body data-spy="scroll" data-offset="0" data-target="#navbar-main" onload="parseInit()"> 
 	<div id="headerwrap" id="home" name="home">
 		<header class="clearfix">
 			<h2><span>What are you thinking?</span></h2>
@@ -54,7 +64,7 @@
 			Thought:<br>
 			<input type="text" id="thoughtBox" name="thought_box" /><br>
 			Alias: <input type="text" id="aliasBox" name="alias_box" /><br>
-			<input type="button" onclick="parseInit()" id="test_parse_btn" value="Test Parse" />
+			<input type="button" onclick="submitThough()" id="test_parse_btn" value="Test Parse" />
 		</form>
 		<br> 
 		<input type="button" onclick="test()" id="myButton" class="float-left submit-button" value="Who's with me?" />
