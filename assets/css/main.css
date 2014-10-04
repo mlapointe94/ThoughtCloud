@@ -26,6 +26,16 @@ body {
     line-height: 1.4;
 }
 
+#textBox{
+  height:30px;
+  width:40%;
+  border:1px solid #C0C0C0;
+  padding-top:5px;
+  margin-left:auto;
+  margin-right:auto; 
+  margin-top:auto; 
+}
+
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
  * These selection rule sets have to be separate.
