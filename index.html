@@ -44,10 +44,10 @@
 			thought: thoughtValue
 		}, {
 			success: function(thoughtObject) {
-				alert("yay! it worked");
+				// alert("SUCCESS");
 			},
 			error: function(thoughtObject, error) {
-				alert("Oh no!");
+				alert("ERROR: " + error.code + " " + error.message);
 			}
 		});
 
@@ -63,11 +63,9 @@
 		</header>	    
 		<br>
     	<form onSubmit="JavaScript:submitThought()">
-			Thought:<br>
 			<input type="text" id="thoughtBox" name="thought_box" /><br>
 			Alias: <input type="text" id="aliasBox" name="alias_box" /><br>
 			<input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="Submit" /><br>
-			<!-- <input type="button" onclick="test()" id="myButton" class="float-left submit-button" value="Who's with me?" /> -->
 		</form>
 	</div>
 </body>
