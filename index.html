@@ -36,7 +36,7 @@
 	function submitThought() {
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
-
+		information = processIdolContent(thoughtValue);
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
 		var thoughtObject = new ThoughtObject();
 		thoughtObject.save({
@@ -53,6 +53,39 @@
 
 		console.log("Page change");
 	}
+
+	function processIdolContent(thoughtValue) {
+		information = {};
+		console.log(thoughtValue);
+		var request = makeHttpObject();
+		request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
+		request.send(null);
+		request.onreadystatechange = function() {
+		  	if (request.readyState == 4) {
+		  		result = request.responseText;
+				result_obj = JSON.parse(result);
+				for (var i = 0; i < result_obj.positive.length; i++) {
+					information[result_obj.positive[i].topic] = result_obj.positive[i].score
+				};
+				for (var i = 0; i < result_obj.negative.length; i++) {
+					information[result_obj.negative[i].topic] = result_obj.negative[i].score
+				};
+		  	}
+		};
+		return information;
+	}
+
+	function makeHttpObject() {
+	  try {return new XMLHttpRequest();}
+	  catch (error) {}
+	  try {return new ActiveXObject("Msxml2.XMLHTTP");}
+	  catch (error) {}
+	  try {return new ActiveXObject("Microsoft.XMLHTTP");}
+	  catch (error) {}
+
+	  throw new Error("Could not create HTTP request object.");
+	}
+
 	</script>
 </head>
 
