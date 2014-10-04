@@ -19,7 +19,28 @@
 
 	<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
 	<link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
-	<script src="assets/js/test.js"> </script>
+	<script src="assets/js/test.js"></script>
+
+	<!-- Parse setup -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-1.3.0.min.js"></script>
+
+	<script src="assets/js/jquery.min.js"></script>
+	<script type="text/javascript" src="assets/js/modernizr.custom.js"></script>
+
+	<script type="text/javascript">
+	function parseInit() {
+		Parse.initialize("k5ytQPE1ZXYSfBfxqKQCpGP124STSxdIXeopuTLp", "JOeN7E26XVxZ5vW8OIaANeyXEMU5lBLNF8s4BoLa");
+
+		var TestObject = Parse.Object.extend("TestObject");
+		var testObject = new TestObject();
+		testObject.save({foo: "bar"}).then(function(object) {
+			alert("yay! it worked");
+		});
+
+		//document.getElementById('textBox').value = document.getElementById('textBox').value + "me";
+	}
+	</script>
 </head>
 
 <body data-spy="scroll" data-offset="0" data-target="#navbar-main"> 
@@ -27,12 +48,13 @@
 		<header class="clearfix">
 			<h2><span>What are you thinking?</span></h2>
 		</header>	    
-		<br> 
+		<br>
     	<form>
-			<input type="text" id="textBox" name="firstname"><br>
+			<input type="text" id="textBox" name="firstname" /><br>
+			<input type="button" onclick="parseInit()" id="POS" value="TEST ME :)" />
 		</form>
 		<br> 
-		<button onclick="test()" id="myButton" class="float-left submit-button" >Who's with me?</button>
+		<input type="button" onclick="test()" id="myButton" class="float-left submit-button" value="Who's with me?" />
 	</div>
 </body>
 </html>
