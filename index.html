@@ -58,14 +58,20 @@
 				result_obj = JSON.parse(result);
 				for (var i = 0; i < result_obj.positive.length; i++) {
 					if (result_obj.positive[i].topic != null) {
-						topics.push(result_obj.positive[i].topic);
-						scores.push(result_obj.positive[i].score);
+						topic_a = result_obj.positive[i].topic.split(" ");
+						for (var j = 0; j < topic_a.length; j++) {
+							topics.push(topic_a[j].toLowerCase());
+							scores.push(result_obj.positive[i].score);	
+						}
 					}
 				};
 				for (var i = 0; i < result_obj.negative.length; i++) {
 					if (result_obj.negative[i].topic != null) {
-						topics.push(result_obj.negative[i].topic);
-						scores.push(result_obj.negative[i].score);
+						topic_a = result_obj.negative[i].topic.split(" ");
+						for (var j = 0; j < topic_a.length; j++) {
+							topics.push(topic_a[j].toLowerCase());
+							scores.push(result_obj.negative[i].score);
+						}
 					}
 				};
 				getLocation(thoughtValue, aliasValue, topics, scores);
@@ -93,20 +99,42 @@
 
 	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr, userLoc) {
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
+		insertedObjId = null;
+		//insert new item into database
+		var thoughtObject = new ThoughtObject();
+		thoughtObject.save({
+			alias: aliasValue,
+			thought: thoughtValue,
+			topics: topicsArr,
+			scores: scoresArr,
+			location: userLoc
+		}, {
+			success: function(thoughtObject) {
+				insertedObjId = thoughtObject.id;
+				// alert("SUCCESS");
+			},
+			error: function(thoughtObject, error) {
+				alert("ERROR: " + error.code + " " + error.message);
+			}
+		});
+
 		console.log(topicsArr);
 		console.log(scoresArr);	
 		
 		if (topicsArr.length == 0) {
 			// no results to match against
 		} else {
-			// add constraints to query
-			var query = new Parse.Query(ThoughtObject);
+			var queries = [];
 			
-			// find all thoughts that match
+			// find all thoughts that match ANY of the topics
 			for (var i = 0; i < topicsArr.length; i++) {
-				query.equalTo("topics", topics[i]);
+				var q = new Parse.Query(ThoughtObject);
+				q.equalTo("topics", topics[i]);
+				queries.push(q);
 			}
 			
+			var query = Parse.Query.or.apply(Parse.Query, queries);
+
 			query.find({
 				success: function(preResults) {
 					results = [] // used to store results with same sentiment ONLY
@@ -126,8 +154,8 @@
 							if (topicIndex >= 0) { // topic exists in current thought
 								currScore = scoresArr[topicIndex];
 								objScore = objectScores[ind];
-								console.log(objScore + ' ' + currScore);
-								if (objScore * currScore > 0) {
+								console.log(object.id + "    " + insertedObjId);
+								if (objScore * currScore > 0 && object.id != insertedObjId) {
 									// both scores are the same sign
 									
 									results.push(object);
@@ -138,6 +166,7 @@
 					}
 
 					document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
+					document.getElementById("thoughtEntered").innerHTML = "\""+thoughtValue+"\""; 
 					// alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
           
@@ -156,22 +185,6 @@
 				}
 			});
 		}
-		
-		var thoughtObject = new ThoughtObject();
-		thoughtObject.save({
-			alias: aliasValue,
-			thought: thoughtValue,
-			topics: topicsArr,
-			scores: scoresArr,
-			location: userLoc
-		}, {
-			success: function(thoughtObject) {
-				// alert("SUCCESS");
-			},
-			error: function(thoughtObject, error) {
-				alert("ERROR: " + error.code + " " + error.message);
-			}
-		});
 	}
 
 	function makeHttpObject() {
@@ -181,7 +194,6 @@
 	  catch (error) {}
 	  try {return new ActiveXObject("Microsoft.XMLHTTP");}
 	  catch (error) {}
-
 	  throw new Error("Could not create HTTP request object.");
 	}
 
@@ -211,7 +223,7 @@
 
 
      for (var i = 0; i < listOfMatches.length; i++) {
-            resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i].get('thought') + "<br/> -" + listOfMatches[i].get('alias') + " from " + listOfMatches[i].get('location'); 
+            resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i].get('thought') + "<br/> -" + listOfMatches[i].get('alias') + " from " + listOfMatches[i].get('location') + "<br/>"; 
       }
 
 
@@ -292,6 +304,7 @@ function getThoughtFeed(thoughtsArray, thought) {
 <!--the number should be computed after button is pressed -->
 <div class="container" id="results" name="results"  style="display:none" align="center">
  <h1 class="quantity" id="numThoughts"></h1>
+ <h2 class="qunatity" id="thoughtEntered"></h2>
  <hr> 
  <p id="listing">
 </div>
