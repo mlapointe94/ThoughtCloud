@@ -71,8 +71,6 @@
 				getLocation(thoughtValue, aliasValue, topics, scores);
 		  	}
 		};
-
-    return result_obj; 
 	}
 
 	function getLocation(thoughtValue, aliasValue, topicsArr, scoresArr) {
@@ -121,7 +119,7 @@
 					for (var i = 0; i < results.length; i++) { 
 						var object = results[i];
 						alert(object.id + ' - ' + object.get('thought'));
-						thoughtsArr.push(object.get('thought')); 
+						thoughtsArr.push(object); 
 
 					}
 					testRetrieval(thoughtsArr); 
@@ -186,7 +184,7 @@
 
 
      for (var i = 0; i < listOfMatches.length; i++) {
-            resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i]; 
+            resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i].get('thought') + "<br/> -" + listOfMatches[i].get('alias') + " from " + listOfMatches[i].get('location'); 
       }
 
 
