@@ -112,19 +112,19 @@
 			query.find({
 				success: function(results) {
 
-          document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
+					document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
 					alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
           
-          thoughtsArr = []; 
+					thoughtsArr = []; 
 
 					for (var i = 0; i < results.length; i++) { 
 						var object = results[i];
 						alert(object.id + ' - ' + object.get('thought'));
-            thoughtsArr.push(object.get('thought')); 
+						thoughtsArr.push(object.get('thought')); 
 
 					}
-          testRetrieval(thoughtsArr); 
+					testRetrieval(thoughtsArr); 
 				},
 				error: function(error) {
 					alert("Error: " + error.code + " " + error.message);
@@ -200,7 +200,7 @@
 
 function getThoughtFeed(thoughtsArray, thought) {
 	var metrics = int[thoughtsArray.length]; // Array of metrics corresponding to each thought in thoughtArray (metrics are in (0,1) where closer to 1 means more relevant)
-	var thoughtTopics = thought.get('topic')
+	var thoughtTopics = thought.get('topic');
 	var numThoughtTopics = thoughtTopics.length;
 
 	// Assign a matching metric to each "relevant" thought
@@ -226,7 +226,7 @@ function getThoughtFeed(thoughtsArray, thought) {
 		var j = i;
 		var currMetric = A[i];
 		var currThought = thoughtsArray[i];
-		while (j > 0 and metrics[j - 1] < currMetric) {
+		while (j > 0 && metrics[j - 1] < currMetric) {
 			metrics[i] = metrics[j - 1];
 			thoughtsArray[i] = thoughtsArray[j - 1];
 			j--;
