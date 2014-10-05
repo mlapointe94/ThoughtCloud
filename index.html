@@ -42,7 +42,7 @@
 	    document.getElementById('numThoughts').innerHTML= "finding matches";
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
-		processIdolContent(thoughtValue, aliasValue);
+		tryTextTokenizer(thoughtValue, aliasValue, [], []);
 	}
 
 	function processIdolContent(thoughtValue, aliasValue) {
@@ -56,7 +56,7 @@
 		  	if (request.readyState == 4) {
 		  		result = request.responseText;
 				result_obj = JSON.parse(result);
-				for (var i = 0; i < result_obj.positive.length; i++) {
+			/*	for (var i = 0; i < result_obj.positive.length; i++) {
 					if (result_obj.positive[i].topic != null) {
 						topic_a = result_obj.positive[i].topic.split(" ");
 						for (var j = 0; j < topic_a.length; j++) {
@@ -74,6 +74,7 @@
 						}
 					}
 				};
+			*/
 				topics = [];
 				scores = [];
 				if (topics.length == 0) {
@@ -95,7 +96,7 @@
 				tokens_obj = JSON.parse(tokens);
 				for (var i = 0; i < tokens_obj.terms.length; i++) {
 					if (tokens_obj.terms[i].weight > 0) {
-						topics.push(tokens_obj.terms[i].term);
+						topics.push(tokens_obj.terms[i].term.toLowerCase());
 						scores.push(0);
 					}
 				};
@@ -129,23 +130,26 @@
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
 		insertedObjId = null;
 		//insert new item into database
-		var thoughtObject = new ThoughtObject();
-		thoughtObject.save({
-			alias: aliasValue,
-			thought: thoughtValue,
-			topics: topicsArr,
-			scores: scoresArr,
-			location: userLoc
-		}, {
-			success: function(thoughtObject) {
-				insertedObjId = thoughtObject.id;
-				// alert("SUCCESS");
-			},
-			error: function(thoughtObject, error) {
-				alert("ERROR: " + error.code + " " + error.message);
-			}
-		});
-
+		words = thoughtValue.split(/\s+/);
+		if (words.length > 1)
+		{
+			var thoughtObject = new ThoughtObject();
+			thoughtObject.save({
+				alias: aliasValue,
+				thought: thoughtValue,
+				topics: topicsArr,
+				scores: scoresArr,
+				location: userLoc
+			}, {
+				success: function(thoughtObject) {
+					insertedObjId = thoughtObject.id;
+					// alert("SUCCESS");
+				},
+				error: function(thoughtObject, error) {
+					alert("ERROR: " + error.code + " " + error.message);
+				}
+			});			
+		}
 		console.log(topicsArr);
 		console.log(scoresArr);	
 		
@@ -157,7 +161,7 @@
 			// find all thoughts that match ANY of the topics
 			for (var i = 0; i < topicsArr.length; i++) {
 				var q = new Parse.Query(ThoughtObject);
-				q.equalTo("topics", topics[i]);
+				q.equalTo("topics", topicsArr[i]);
 				queries.push(q);
 			}
 			
