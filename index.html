@@ -108,17 +108,44 @@
 			}
 			
 			query.find({
-				success: function(results) {
+				success: function(preResults) {
+					results = [] // used to store results with same sentiment ONLY
+					
+					// Do something with the returned Parse.Object values
+					for (var i = 0; i < preResults.length; i++) { 
+						var object = preResults[i];
+						
+						objectScores = object.get('scores');
+						objectTopics = object.get('topics');
+						console.log("objectTopics: " + objectTopics);
+						
+						// go through each topic in the preResults
+						for (var ind = 0; ind < objectTopics.length; ind++) {
+							topic = objectTopics[ind];
+							topicIndex = topicsArr.indexOf(topic);
+							if (topicIndex >= 0) { // topic exists in current thought
+								currScore = scoresArr[topicIndex];
+								objScore = objectScores[ind];
+								console.log(objScore + ' ' + currScore);
+								if (objScore * currScore > 0) {
+									// both scores are the same sign
+									
+									results.push(object);
+									break;
+								}
+							}
+						}
+					}
 
 					document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
-					alert("Successfully retrieved " + results.length + " scores.");
+					// alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
           
 					thoughtsArr = []; 
 
 					for (var i = 0; i < results.length; i++) { 
 						var object = results[i];
-						alert(object.id + ' - ' + object.get('thought'));
+						// alert(object.id + ' - ' + object.get('thought'));
 						thoughtsArr.push(object); 
 
 					}
@@ -164,10 +191,10 @@
   query.get("kQVuw1rdUC", {
     success: function(thoughtObject) {
     // The object was retrieved successfully.
-    alert("yay"); 
+    // alert("yay"); 
 
     var alias = thoughtObject.get("alias");
-    alert(alias)
+    // alert(alias)
     //write all these things to the div
 
     //clear the div if there was any content there 
