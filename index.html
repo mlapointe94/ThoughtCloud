@@ -74,26 +74,32 @@
 		console.log(topicsArr);
 		console.log(scoresArr);
 		
-		// add constraints to query
-		var query = new Parse.Query(ThoughtObject);
-		for (var i = 0; i < topicsArr.length; i++) {
-			query.equalTo("topics", topics[i]);
-		}
 		
-		// find all thoughts that match
-		query.find({
-			success: function(results) {
-				alert("Successfully retrieved " + results.length + " scores.");
-				// Do something with the returned Parse.Object values
-				for (var i = 0; i < results.length; i++) { 
-					var object = results[i];
-					alert(object.id + ' - ' + object.get('thought'));
-				}
-			},
-			error: function(error) {
-				alert("Error: " + error.code + " " + error.message);
+		if (topicsArr.length == 0) {
+			// no results to match against
+		} else {
+			// add constraints to query
+			var query = new Parse.Query(ThoughtObject);
+			
+			// find all thoughts that match
+			for (var i = 0; i < topicsArr.length; i++) {
+				query.equalTo("topics", topics[i]);
 			}
-		});
+			
+			query.find({
+				success: function(results) {
+					alert("Successfully retrieved " + results.length + " scores.");
+					// Do something with the returned Parse.Object values
+					for (var i = 0; i < results.length; i++) { 
+						var object = results[i];
+						alert(object.id + ' - ' + object.get('thought'));
+					}
+				},
+				error: function(error) {
+					alert("Error: " + error.code + " " + error.message);
+				}
+			});
+		}
 		
 		var thoughtObject = new ThoughtObject();
 		thoughtObject.save({
