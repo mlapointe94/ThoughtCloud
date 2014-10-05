@@ -57,12 +57,16 @@
 		  		result = request.responseText;
 				result_obj = JSON.parse(result);
 				for (var i = 0; i < result_obj.positive.length; i++) {
-					topics.push(result_obj.positive[i].topic);
-					scores.push(result_obj.positive[i].score);
+					if (result_obj.positive[i].topic != null) {
+						topics.push(result_obj.positive[i].topic);
+						scores.push(result_obj.positive[i].score);
+					}
 				};
 				for (var i = 0; i < result_obj.negative.length; i++) {
-					topics.push(result_obj.negative[i].topic);
-					scores.push(result_obj.negative[i].score);
+					if (result_obj.negative[i].topic != null) {
+						topics.push(result_obj.negative[i].topic);
+						scores.push(result_obj.negative[i].score);
+					}
 				};
 				getLocation(thoughtValue, aliasValue, topics, scores);
 		  	}
@@ -92,8 +96,7 @@
 	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr, userLoc) {
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
 		console.log(topicsArr);
-		console.log(scoresArr);
-		
+		console.log(scoresArr);	
 		
 		if (topicsArr.length == 0) {
 			// no results to match against
