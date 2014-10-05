@@ -34,12 +34,16 @@
 	}
 
 	function submitThought() {
-	    var e = document.getElementById('results');
-	         if(e.style.display == 'block')
-	            e.style.display = 'none';
-	         else
-	            e.style.display = 'block';
-	    document.getElementById('numThoughts').innerHTML= "finding matches";
+
+		// hide the first div 
+
+		 document.getElementById("headerwrap").style.display = 'none';
+		var e = document.getElementById('results');
+		if(e.style.display == 'block')
+			e.style.display = 'none';
+		else
+			e.style.display = 'block';
+		document.getElementById('numThoughts').innerHTML= "finding matches";
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
 		tryTextTokenizer(thoughtValue, aliasValue, [], []);
@@ -53,8 +57,8 @@
 		request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
 		request.send(null);
 		request.onreadystatechange = function() {
-		  	if (request.readyState == 4) {
-		  		result = request.responseText;
+			if (request.readyState == 4) {
+				result = request.responseText;
 				result_obj = JSON.parse(result);
 			/*	for (var i = 0; i < result_obj.positive.length; i++) {
 					if (result_obj.positive[i].topic != null) {
@@ -74,7 +78,7 @@
 						}
 					}
 				};
-			*/
+				*/
 				topics = [];
 				scores = [];
 				if (topics.length == 0) {
@@ -82,7 +86,7 @@
 				} else {
 					getLocation(thoughtValue, aliasValue, topics, scores);
 				}
-		  	}
+			}
 		};
 	}
 
@@ -205,14 +209,14 @@
 					} else { 
 
 						document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
-					
+
 
 					}
 
 					document.getElementById("thoughtEntered").innerHTML = "\""+thoughtValue+"\""; 
 					// alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
-          
+
 					thoughtsArr = []; 
 
 					for (var i = 0; i < results.length; i++) { 
@@ -227,26 +231,26 @@
 					alert("Error: " + error.code + " " + error.message);
 				}
 			});
-		}
-	}
+}
+}
 
-	function makeHttpObject() {
-	  try {return new XMLHttpRequest();}
-	  catch (error) {}
-	  try {return new ActiveXObject("Msxml2.XMLHTTP");}
-	  catch (error) {}
-	  try {return new ActiveXObject("Microsoft.XMLHTTP");}
-	  catch (error) {}
-	  throw new Error("Could not create HTTP request object.");
-	}
+function makeHttpObject() {
+	try {return new XMLHttpRequest();}
+	catch (error) {}
+	try {return new ActiveXObject("Msxml2.XMLHTTP");}
+	catch (error) {}
+	try {return new ActiveXObject("Microsoft.XMLHTTP");}
+	catch (error) {}
+	throw new Error("Could not create HTTP request object.");
+}
 
- function testRetrieval(listOfMatches) { 
-   var ThoughtObject = Parse.Object.extend("ThoughtObject");
-   var query = new Parse.Query(ThoughtObject);
+function testRetrieval(listOfMatches) { 
+	var ThoughtObject = Parse.Object.extend("ThoughtObject");
+	var query = new Parse.Query(ThoughtObject);
 
 
-  query.get("z13l12k4PA", {
-    success: function(thoughtObject) {
+	query.get("z13l12k4PA", {
+		success: function(thoughtObject) {
     // The object was retrieved successfully.
     // alert("yay"); 
 
@@ -257,8 +261,8 @@
     //clear the div if there was any content there 
     var resultsListing = document.getElementById("listing"); 
 
-     while(resultsListing.hasChildNodes()) { 
-      resultsListing.removeChild(resultsListing.firstChild);
+    while(resultsListing.hasChildNodes()) { 
+    	resultsListing.removeChild(resultsListing.firstChild);
     }
 
     // display the new stuff - do this for each one 
@@ -267,15 +271,15 @@
     // resultsListing.innerHTML = resultsListing.innerHTML + "<br/>hi"; 
 
 
-     for (var i = 0; i < listOfMatches.length; i++) {
-            resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i].get('thought') + "<br/> -" + listOfMatches[i].get('alias') + " from " + listOfMatches[i].get('location') + "<br/>"; 
-      }
-	  },
-	  error: function(object, error) {
+    for (var i = 0; i < listOfMatches.length; i++) {
+    	resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i].get('thought') + "<br/> -" + listOfMatches[i].get('alias') + " from " + listOfMatches[i].get('location') + "<br/>"; 
+    }
+},
+error: function(object, error) {
 	    // The object was not retrieved successfully.
 	    // error is a Parse.Error with an error code and message.
-	  }
-	});
+	}
+});
 }
 
 function getThoughtFeed(thoughtsArray, thought) {
@@ -322,43 +326,45 @@ function getThoughtFeed(thoughtsArray, thought) {
 <!-- add toggle after http://stackoverflow.com/questions/19163327/how-do-i-make-a-div-hidden-by-default-using-javascript --> 
 </head>
 
-<body data-spy="scroll" data-offset="0" onload="parseInit()"> 
+<body data-spy="scroll" data-offset="0" onload="parseInit()" > 
 	<div id="bg">
 		<img src="assets/css/thoughtCloudBackground.png" id="bg" alt="">
 	</div> 
-	<div id="headerwrap">
-   <form onSubmit="JavaScript:submitThought()">
-    <h1 id="question"> What are you thinking? </h1> 
-    <br> 
-    <div> 
-     <input type="text" id="thoughtBox" name="thought_box" placeholder="&quot;I love HackMIT! &quot;" /> &nbsp;by&nbsp; 
-     <input type="text" id="aliasBox" name="alias_box" placeholder="HackMITHacker" /><br>
-   </div> 
-   <br> 
-   <br> 
-   <div> 
-     <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="Send to ThoughtCloud" /></a>
-   </div> 
- </form>
-</div>
 
-  <div id="test"> 
+	<div id="headerwrap" style="display:block">
+		<form onSubmit="JavaScript:submitThought()" >
+			<h1 id="question"> What are you thinking? </h1> 
+			<br> 
+			<div> 
+				<input type="text" id="thoughtBox" name="thought_box" placeholder="&quot;I love HackMIT! &quot;" /> &nbsp;by&nbsp; 
+				<input type="text" id="aliasBox" name="alias_box" placeholder="HackMITHacker" /><br>
+			</div> 
+			<br> 
+			<br> 
+			<div> 
 
-  </div> 
-<!--should be invisible until a submission is made --> 
-<!--the number should be computed after button is pressed -->
-<div class="container" id="results" name="results"  style="display:none" align="center">
-	
- <h1 class="quantity" id="numThoughts"></h1>
+				<!--if this is clicked, hide the upper divsm--> 
+				<a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="Send to ThoughtCloud" /></a>
+			</div> 
+		</form>
+	</div>
+	<div id="test"> 
+	</div> 
 
- <h2 class="qunatity" id="thoughtEntered"></h2>
- <hr> 
+	<!--should be invisible until a submission is made --> 
+	<!--the number should be computed after button is pressed -->
+	<div class="container" id="results" name="results"  style="display:none" align="center">
 
-  <div> 
-     <a href="index.html" class="smoothScroll"> <input type="button" onclick="goHome()" id="returnHome" class="float-left submit-button" value="Send New Thought" /></a>
-   </div> 
- <p id="listing">
-</div>
+		<h1 class="quantity" id="numThoughts"></h1>
 
-</body>
-</html>
+		<h2 class="qunatity" id="thoughtEntered"></h2>
+		<hr> 
+
+		<div> 
+			<a href="index.html" class="smoothScroll"> <input type="button" onclick="goHome()" id="returnHome" class="float-left submit-button" value="Send New Thought" /></a>
+		</div> 
+		<p id="listing">
+		</div>
+
+	</body>
+	</html>
