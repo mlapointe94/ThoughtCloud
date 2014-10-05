@@ -95,7 +95,7 @@
 				tokens_obj = JSON.parse(tokens);
 				for (var i = 0; i < tokens_obj.terms.length; i++) {
 					if (tokens_obj.terms[i].weight > 0) {
-						topics.push(tokens_obj.terms[i].term);
+						topics.push(tokens_obj.terms[i].term.toLowerCase());
 						scores.push(0);
 					}
 				};
@@ -129,23 +129,26 @@
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
 		insertedObjId = null;
 		//insert new item into database
-		var thoughtObject = new ThoughtObject();
-		thoughtObject.save({
-			alias: aliasValue,
-			thought: thoughtValue,
-			topics: topicsArr,
-			scores: scoresArr,
-			location: userLoc
-		}, {
-			success: function(thoughtObject) {
-				insertedObjId = thoughtObject.id;
-				// alert("SUCCESS");
-			},
-			error: function(thoughtObject, error) {
-				alert("ERROR: " + error.code + " " + error.message);
-			}
-		});
-
+		words = thoughtValue.split(/\s+/);
+		if (words.length > 1)
+		{
+			var thoughtObject = new ThoughtObject();
+			thoughtObject.save({
+				alias: aliasValue,
+				thought: thoughtValue,
+				topics: topicsArr,
+				scores: scoresArr,
+				location: userLoc
+			}, {
+				success: function(thoughtObject) {
+					insertedObjId = thoughtObject.id;
+					// alert("SUCCESS");
+				},
+				error: function(thoughtObject, error) {
+					alert("ERROR: " + error.code + " " + error.message);
+				}
+			});			
+		}
 		console.log(topicsArr);
 		console.log(scoresArr);	
 		
