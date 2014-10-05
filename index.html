@@ -197,7 +197,18 @@
 						}
 					}
 
-					document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
+					if (results.length == 1) { 
+						document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHT IS WITH YOU"; 
+					} else if (results.length == 0) { 
+						document.getElementById("numThoughts").innerHTML = "YOU ARE A UNIQUE INDIVIDUAL"; 
+
+					} else { 
+
+						document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
+					
+
+					}
+
 					document.getElementById("thoughtEntered").innerHTML = "\""+thoughtValue+"\""; 
 					// alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
@@ -232,6 +243,8 @@
  function testRetrieval(listOfMatches) { 
    var ThoughtObject = Parse.Object.extend("ThoughtObject");
    var query = new Parse.Query(ThoughtObject);
+
+
   query.get("z13l12k4PA", {
     success: function(thoughtObject) {
     // The object was retrieved successfully.
@@ -257,14 +270,12 @@
      for (var i = 0; i < listOfMatches.length; i++) {
             resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i].get('thought') + "<br/> -" + listOfMatches[i].get('alias') + " from " + listOfMatches[i].get('location') + "<br/>"; 
       }
-
-
-  },
-  error: function(object, error) {
-    // The object was not retrieved successfully.
-    // error is a Parse.Error with an error code and message.
-  }
-});
+	  },
+	  error: function(object, error) {
+	    // The object was not retrieved successfully.
+	    // error is a Parse.Error with an error code and message.
+	  }
+	});
 }
 
 function getThoughtFeed(thoughtsArray, thought) {
@@ -326,7 +337,7 @@ function getThoughtFeed(thoughtsArray, thought) {
    <br> 
    <br> 
    <div> 
-     <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="send to thoughtcloud" /></a>
+     <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="Send to ThoughtCloud" /></a>
    </div> 
  </form>
 </div>
@@ -344,7 +355,7 @@ function getThoughtFeed(thoughtsArray, thought) {
  <hr> 
 
   <div> 
-     <a href="index.html" class="smoothScroll"> <input type="button" onclick="goHome()" id="returnHome" class="float-left submit-button" value="send new thought" /></a>
+     <a href="index.html" class="smoothScroll"> <input type="button" onclick="goHome()" id="returnHome" class="float-left submit-button" value="Send New Thought" /></a>
    </div> 
  <p id="listing">
 </div>
