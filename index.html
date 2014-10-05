@@ -42,7 +42,7 @@
 	    document.getElementById('numThoughts').innerHTML= "finding matches";
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
-		processIdolContent(thoughtValue, aliasValue);
+		tryTextTokenizer(thoughtValue, aliasValue, [], []);
 	}
 
 	function processIdolContent(thoughtValue, aliasValue) {
@@ -56,7 +56,7 @@
 		  	if (request.readyState == 4) {
 		  		result = request.responseText;
 				result_obj = JSON.parse(result);
-				for (var i = 0; i < result_obj.positive.length; i++) {
+			/*	for (var i = 0; i < result_obj.positive.length; i++) {
 					if (result_obj.positive[i].topic != null) {
 						topic_a = result_obj.positive[i].topic.split(" ");
 						for (var j = 0; j < topic_a.length; j++) {
@@ -74,6 +74,7 @@
 						}
 					}
 				};
+			*/
 				topics = [];
 				scores = [];
 				if (topics.length == 0) {
@@ -160,7 +161,7 @@
 			// find all thoughts that match ANY of the topics
 			for (var i = 0; i < topicsArr.length; i++) {
 				var q = new Parse.Query(ThoughtObject);
-				q.equalTo("topics", topics[i]);
+				q.equalTo("topics", topicsArr[i]);
 				queries.push(q);
 			}
 			
