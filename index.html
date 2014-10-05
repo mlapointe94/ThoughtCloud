@@ -64,12 +64,30 @@
 					topics.push(result_obj.negative[i].topic);
 					scores.push(result_obj.negative[i].score);
 				};
-				pushToParse(thoughtValue, aliasValue, topics, scores);
+				getLocation(thoughtValue, aliasValue, topics, scores);
 		  	}
 		};
 	}
 
-	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
+	function getLocation(thoughtValue, aliasValue, topicsArr, scoresArr) {
+		userLoc = "";
+		var locRequest = makeHttpObject();
+		locRequest.open("GET", "https://ipinfo.io", true);
+		locRequest.send(null);
+		locRequest.onreadystatechange = function() {
+			if (locRequest.readyState == 4) {
+				userLoc = locRequest.responseText;
+				index = userLoc.indexOf("class=\"map\"");
+				index = userLoc.indexOf("alt=\"", index);
+				endIndex = userLoc.indexOf("title=", index);
+				userLoc = userLoc.substring(index+5,endIndex-6);
+				console.log(userLoc + " is loc");
+				pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr, userLoc);
+			}
+		};
+	}
+
+	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr, userLoc) {
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
 		console.log(topicsArr);
 		console.log(scoresArr);
@@ -100,7 +118,8 @@
 			alias: aliasValue,
 			thought: thoughtValue,
 			topics: topicsArr,
-			scores: scoresArr
+			scores: scoresArr,
+			location: userLoc
 		}, {
 			success: function(thoughtObject) {
 				// alert("SUCCESS");
