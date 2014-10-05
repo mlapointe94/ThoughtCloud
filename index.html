@@ -39,7 +39,7 @@
 	            e.style.display = 'none';
 	         else
 	            e.style.display = 'block';
-	    document.getElementById('numThoughts').innerHTML="CHANGE ME";
+	    document.getElementById('numThoughts').innerHTML= "finding matches";
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
 		processIdolContent(thoughtValue, aliasValue);
@@ -67,6 +67,8 @@
 				getLocation(thoughtValue, aliasValue, topics, scores);
 		  	}
 		};
+
+    return result_obj; 
 	}
 
 	function getLocation(thoughtValue, aliasValue, topicsArr, scoresArr) {
@@ -106,12 +108,20 @@
 			
 			query.find({
 				success: function(results) {
+
+          document.getElementById("numThoughts").innerHTML = results.length + "&nbsp;THOUGHTS ARE WITH YOU"; 
 					alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
+          
+          thoughtsArr = []; 
+
 					for (var i = 0; i < results.length; i++) { 
 						var object = results[i];
 						alert(object.id + ' - ' + object.get('thought'));
+            thoughtsArr.push(object.get('thought')); 
+
 					}
+          testRetrieval(thoughtsArr); 
 				},
 				error: function(error) {
 					alert("Error: " + error.code + " " + error.message);
@@ -160,7 +170,7 @@
     //write all these things to the div
 
     //clear the div if there was any content there 
-    var resultsListing = document.getElementById(""); 
+    var resultsListing = document.getElementById("listing"); 
 
      while(resultsListing.hasChildNodes()) { 
       resultsListing.removeChild(resultsListing.firstChild);
@@ -168,8 +178,15 @@
 
     // display the new stuff - do this for each one 
     //loop through list of Matches 
-    resultsListing.innerHTML = alias; 
-    resultsListing.innerHTML = resultsListing.innerHTML + "<br/>hi"; 
+    // resultsListing.innerHTML = alias; 
+    // resultsListing.innerHTML = resultsListing.innerHTML + "<br/>hi"; 
+
+
+     for (var i = 0; i < listOfMatches.length; i++) {
+            resultsListing.innerHTML = resultsListing.innerHTML + "<br/>" + listOfMatches[i]; 
+      }
+
+
   },
   error: function(object, error) {
     // The object was not retrieved successfully.
@@ -207,6 +224,8 @@
 <!--the number should be computed after button is pressed -->
 <div class="container" id="results" name="results"  style="display:none" align="center">
  <h1 class="quantity" id="numThoughts"></h1>
+ <hr> 
+ <p id="listing">
 </div>
 
 </body>
