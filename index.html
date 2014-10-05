@@ -34,47 +34,68 @@
 	}
 
 	function submitThought() {
-   var e = document.getElementById('results');
-   if(e.style.display == 'block')
-     e.style.display = 'none';
-   else
-     e.style.display = 'block';
-   var thoughtValue = document.getElementById('thoughtBox').value;
-   var aliasValue = document.getElementById('aliasBox').value;
-   processIdolContent(thoughtValue, aliasValue);
- }
+	    var e = document.getElementById('results');
+	         if(e.style.display == 'block')
+	            e.style.display = 'none';
+	         else
+	            e.style.display = 'block';
+	    document.getElementById('numThoughts').innerHTML="CHANGE ME";
+		var thoughtValue = document.getElementById('thoughtBox').value;
+		var aliasValue = document.getElementById('aliasBox').value;
+		processIdolContent(thoughtValue, aliasValue);
+	}
 
- function processIdolContent(thoughtValue, aliasValue) {
-  topics = [];
-  scores = [];
-  console.log(thoughtValue);
-  var request = makeHttpObject();
-  request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
-  request.send(null);
-  request.onreadystatechange = function() {
-   if (request.readyState == 4) {
-    result = request.responseText;
-    result_obj = JSON.parse(result);
-    for (var i = 0; i < result_obj.positive.length; i++) {
-     topics.push(result_obj.positive[i].topic);
-     scores.push(result_obj.positive[i].score);
-   };
-   for (var i = 0; i < result_obj.negative.length; i++) {
-     topics.push(result_obj.negative[i].topic);
-     scores.push(result_obj.negative[i].score);
-   };
-   pushToParse(thoughtValue, aliasValue, topics, scores);
- }
-};
-}
+	function processIdolContent(thoughtValue, aliasValue) {
+		topics = [];
+		scores = [];
+		console.log(thoughtValue);
+		var request = makeHttpObject();
+		request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
+		request.send(null);
+		request.onreadystatechange = function() {
+		  	if (request.readyState == 4) {
+		  		result = request.responseText;
+				result_obj = JSON.parse(result);
+				for (var i = 0; i < result_obj.positive.length; i++) {
+					topics.push(result_obj.positive[i].topic);
+					scores.push(result_obj.positive[i].score);
+				};
+				for (var i = 0; i < result_obj.negative.length; i++) {
+					topics.push(result_obj.negative[i].topic);
+					scores.push(result_obj.negative[i].score);
+				};
+				getLocation(thoughtValue, aliasValue, topics, scores);
+		  	}
+		};
+	}
 
-function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
-  var ThoughtObject = Parse.Object.extend("ThoughtObject");
-  console.log(topicsArr);
-  console.log(scoresArr);
+	function getLocation(thoughtValue, aliasValue, topicsArr, scoresArr) {
+		userLoc = "";
+		var locRequest = makeHttpObject();
+		locRequest.open("GET", "https://ipinfo.io", true);
+		locRequest.send(null);
+		locRequest.onreadystatechange = function() {
+			if (locRequest.readyState == 4) {
+				userLoc = locRequest.responseText;
+				index = userLoc.indexOf("class=\"map\"");
+				index = userLoc.indexOf("alt=\"", index);
+				endIndex = userLoc.indexOf("title=", index);
+				userLoc = userLoc.substring(index+5,endIndex-6);
+				console.log(userLoc + " is loc");
+				pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr, userLoc);
+			}
+		};
+	}
 
-  if (topicsArr.length == 0) {
-  } else {
+	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr, userLoc) {
+		var ThoughtObject = Parse.Object.extend("ThoughtObject");
+		console.log(topicsArr);
+		console.log(scoresArr);
+		
+		
+		if (topicsArr.length == 0) {
+			// no results to match against
+		} else {
 			// add constraints to query
 			var query = new Parse.Query(ThoughtObject);
 			
@@ -85,8 +106,7 @@ function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
 			
 			query.find({
 				success: function(results) {
-          document.getElementById("numThoughts").innerHTML = results.length + " THOUGHTS ARE WITH YOU"; 
-          alert("Successfully retrieved " + results.length + " scores.");
+					alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
 					for (var i = 0; i < results.length; i++) { 
 						var object = results[i];
@@ -104,7 +124,8 @@ function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
 			alias: aliasValue,
 			thought: thoughtValue,
 			topics: topicsArr,
-			scores: scoresArr
+			scores: scoresArr,
+			location: userLoc
 		}, {
 			success: function(thoughtObject) {
 				// alert("SUCCESS");
@@ -116,15 +137,15 @@ function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
 	}
 
 	function makeHttpObject() {
-   try {return new XMLHttpRequest();}
-   catch (error) {}
-   try {return new ActiveXObject("Msxml2.XMLHTTP");}
-   catch (error) {}
-   try {return new ActiveXObject("Microsoft.XMLHTTP");}
-   catch (error) {}
+	  try {return new XMLHttpRequest();}
+	  catch (error) {}
+	  try {return new ActiveXObject("Msxml2.XMLHTTP");}
+	  catch (error) {}
+	  try {return new ActiveXObject("Microsoft.XMLHTTP");}
+	  catch (error) {}
 
-   throw new Error("Could not create HTTP request object.");
- }
+	  throw new Error("Could not create HTTP request object.");
+	}
 
  function testRetrieval(listOfMatches) { 
    var ThoughtObject = Parse.Object.extend("ThoughtObject");
