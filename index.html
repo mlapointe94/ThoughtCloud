@@ -46,7 +46,8 @@
 	}
 
 	function processIdolContent(thoughtValue, aliasValue) {
-		information = {};
+		topics = [];
+		scores = [];
 		console.log(thoughtValue);
 		var request = makeHttpObject();
 		request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
@@ -56,22 +57,50 @@
 		  		result = request.responseText;
 				result_obj = JSON.parse(result);
 				for (var i = 0; i < result_obj.positive.length; i++) {
-					information[result_obj.positive[i].topic] = result_obj.positive[i].score
+					topics.push(result_obj.positive[i].topic);
+					scores.push(result_obj.positive[i].score);
 				};
 				for (var i = 0; i < result_obj.negative.length; i++) {
-					information[result_obj.negative[i].topic] = result_obj.negative[i].score
+					topics.push(result_obj.negative[i].topic);
+					scores.push(result_obj.negative[i].score);
 				};
-				pushToParse(thoughtValue, aliasValue, information);
+				pushToParse(thoughtValue, aliasValue, topics, scores);
 		  	}
 		};
 	}
 
-	function pushToParse(thoughtValue, aliasValue, information) {
+	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
 		var ThoughtObject = Parse.Object.extend("ThoughtObject");
+		console.log(topicsArr);
+		console.log(scoresArr);
+		
+		// add constraints to query
+		var query = new Parse.Query(ThoughtObject);
+		for (var i = 0; i < topicsArr.length; i++) {
+			query.equalTo("topics", topics[i]);
+		}
+		
+		// find all thoughts that match
+		query.find({
+			success: function(results) {
+				alert("Successfully retrieved " + results.length + " scores.");
+				// Do something with the returned Parse.Object values
+				for (var i = 0; i < results.length; i++) { 
+					var object = results[i];
+					alert(object.id + ' - ' + object.get('thought'));
+				}
+			},
+			error: function(error) {
+				alert("Error: " + error.code + " " + error.message);
+			}
+		});
+		
 		var thoughtObject = new ThoughtObject();
 		thoughtObject.save({
 			alias: aliasValue,
-			thought: thoughtValue
+			thought: thoughtValue,
+			topics: topicsArr,
+			scores: scoresArr
 		}, {
 			success: function(thoughtObject) {
 				// alert("SUCCESS");
