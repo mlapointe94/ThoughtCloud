@@ -34,50 +34,47 @@
 	}
 
 	function submitThought() {
-	    var e = document.getElementById('results');
-	         if(e.style.display == 'block')
-	            e.style.display = 'none';
-	         else
-	            e.style.display = 'block';
-	    document.getElementById('numThoughts').innerHTML="CHANGE ME";
-		var thoughtValue = document.getElementById('thoughtBox').value;
-		var aliasValue = document.getElementById('aliasBox').value;
-		processIdolContent(thoughtValue, aliasValue);
-	}
+   var e = document.getElementById('results');
+   if(e.style.display == 'block')
+     e.style.display = 'none';
+   else
+     e.style.display = 'block';
+   var thoughtValue = document.getElementById('thoughtBox').value;
+   var aliasValue = document.getElementById('aliasBox').value;
+   processIdolContent(thoughtValue, aliasValue);
+ }
 
-	function processIdolContent(thoughtValue, aliasValue) {
-		topics = [];
-		scores = [];
-		console.log(thoughtValue);
-		var request = makeHttpObject();
-		request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
-		request.send(null);
-		request.onreadystatechange = function() {
-		  	if (request.readyState == 4) {
-		  		result = request.responseText;
-				result_obj = JSON.parse(result);
-				for (var i = 0; i < result_obj.positive.length; i++) {
-					topics.push(result_obj.positive[i].topic);
-					scores.push(result_obj.positive[i].score);
-				};
-				for (var i = 0; i < result_obj.negative.length; i++) {
-					topics.push(result_obj.negative[i].topic);
-					scores.push(result_obj.negative[i].score);
-				};
-				pushToParse(thoughtValue, aliasValue, topics, scores);
-		  	}
-		};
-	}
+ function processIdolContent(thoughtValue, aliasValue) {
+  topics = [];
+  scores = [];
+  console.log(thoughtValue);
+  var request = makeHttpObject();
+  request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
+  request.send(null);
+  request.onreadystatechange = function() {
+   if (request.readyState == 4) {
+    result = request.responseText;
+    result_obj = JSON.parse(result);
+    for (var i = 0; i < result_obj.positive.length; i++) {
+     topics.push(result_obj.positive[i].topic);
+     scores.push(result_obj.positive[i].score);
+   };
+   for (var i = 0; i < result_obj.negative.length; i++) {
+     topics.push(result_obj.negative[i].topic);
+     scores.push(result_obj.negative[i].score);
+   };
+   pushToParse(thoughtValue, aliasValue, topics, scores);
+ }
+};
+}
 
-	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
-		var ThoughtObject = Parse.Object.extend("ThoughtObject");
-		console.log(topicsArr);
-		console.log(scoresArr);
-		
-		
-		if (topicsArr.length == 0) {
-			// no results to match against
-		} else {
+function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
+  var ThoughtObject = Parse.Object.extend("ThoughtObject");
+  console.log(topicsArr);
+  console.log(scoresArr);
+
+  if (topicsArr.length == 0) {
+  } else {
 			// add constraints to query
 			var query = new Parse.Query(ThoughtObject);
 			
@@ -88,7 +85,8 @@
 			
 			query.find({
 				success: function(results) {
-					alert("Successfully retrieved " + results.length + " scores.");
+          document.getElementById("numThoughts").innerHTML = results.length + " THOUGHTS ARE WITH YOU"; 
+          alert("Successfully retrieved " + results.length + " scores.");
 					// Do something with the returned Parse.Object values
 					for (var i = 0; i < results.length; i++) { 
 						var object = results[i];
@@ -118,19 +116,49 @@
 	}
 
 	function makeHttpObject() {
-	  try {return new XMLHttpRequest();}
-	  catch (error) {}
-	  try {return new ActiveXObject("Msxml2.XMLHTTP");}
-	  catch (error) {}
-	  try {return new ActiveXObject("Microsoft.XMLHTTP");}
-	  catch (error) {}
+   try {return new XMLHttpRequest();}
+   catch (error) {}
+   try {return new ActiveXObject("Msxml2.XMLHTTP");}
+   catch (error) {}
+   try {return new ActiveXObject("Microsoft.XMLHTTP");}
+   catch (error) {}
 
-	  throw new Error("Could not create HTTP request object.");
-	}
+   throw new Error("Could not create HTTP request object.");
+ }
 
-	</script>
+ function testRetrieval(listOfMatches) { 
+   var ThoughtObject = Parse.Object.extend("ThoughtObject");
+   var query = new Parse.Query(ThoughtObject);
+  query.get("kQVuw1rdUC", {
+    success: function(thoughtObject) {
+    // The object was retrieved successfully.
+    alert("yay"); 
 
-  <!-- add toggle after http://stackoverflow.com/questions/19163327/how-do-i-make-a-div-hidden-by-default-using-javascript --> 
+    var alias = thoughtObject.get("alias");
+    alert(alias)
+    //write all these things to the div
+
+    //clear the div if there was any content there 
+    var resultsListing = document.getElementById(""); 
+
+     while(resultsListing.hasChildNodes()) { 
+      resultsListing.removeChild(resultsListing.firstChild);
+    }
+
+    // display the new stuff - do this for each one 
+    //loop through list of Matches 
+    resultsListing.innerHTML = alias; 
+    resultsListing.innerHTML = resultsListing.innerHTML + "<br/>hi"; 
+  },
+  error: function(object, error) {
+    // The object was not retrieved successfully.
+    // error is a Parse.Error with an error code and message.
+  }
+});
+}
+</script>
+
+<!-- add toggle after http://stackoverflow.com/questions/19163327/how-do-i-make-a-div-hidden-by-default-using-javascript --> 
 </head>
 
 <body data-spy="scroll" data-offset="0" onload="parseInit()"> 
@@ -139,22 +167,26 @@
    <form onSubmit="JavaScript:submitThought()">
     <h1 id="question"> What are you thinking? </h1> 
     <br> 
-      <div> 
-       <input type="text" id="thoughtBox" name="thought_box" placeholder="&quot;I love HackMIT! &quot;" /> &nbsp;by&nbsp; 
-         <input type="text" id="aliasBox" name="alias_box" placeholder="HackMITHacker" /><br>
-      </div> 
-      <br> 
-      <br> 
-      <div> 
-         <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="send to thoughtcloud" /></a>
-      </div> 
-    </form>
-  </div>
-  <!--should be invisible until a submission is made --> 
-  <!--the number should be computed after button is pressed -->
-  <div class="container" id="results" name="results"  style="display:none" align="center">
-   <h1 class="quantity"><span id="numThoughts">7</span> THOUGHTS ARE WITH YOU</h1>
+    <div> 
+     <input type="text" id="thoughtBox" name="thought_box" placeholder="&quot;I love HackMIT! &quot;" /> &nbsp;by&nbsp; 
+     <input type="text" id="aliasBox" name="alias_box" placeholder="HackMITHacker" /><br>
+   </div> 
+   <br> 
+   <br> 
+   <div> 
+     <a href="#results" class="smoothScroll"> <input type="button" onclick="submitThought()" id="submitBtn" class="float-left submit-button" value="send to thoughtcloud" /></a>
+   </div> 
+ </form>
+</div>
+
+  <div id="test"> 
+
   </div> 
+<!--should be invisible until a submission is made --> 
+<!--the number should be computed after button is pressed -->
+<div class="container" id="results" name="results"  style="display:none" align="center">
+ <h1 class="quantity" id="numThoughts"></h1>
+</div>
 
 </body>
 </html>
