@@ -2,7 +2,6 @@ function getThoughtFeed(thoughtsArray, thought) {
 	var metrics = int[thoughtsArray.length]; // Array of metrics corresponding to each thought in thoughtArray (metrics are in (0,1) where closer to 1 means more relevant)
 	var thoughtTopics = thought.get('topic')
 	var numThoughtTopics = thoughtTopics.length;
-	var feed = []
 
 	// Assign a matching metric to each "relevant" thought
 	for (var i = 0; i < thoughtsArray.length; i++) { // For each thought in collection
