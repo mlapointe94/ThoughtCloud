@@ -74,8 +74,36 @@
 						}
 					}
 				};
-				getLocation(thoughtValue, aliasValue, topics, scores);
+				topics = [];
+				scores = [];
+				if (topics.length == 0) {
+					tryTextTokenizer(thoughtValue, aliasValue, topics, scores);
+				} else {
+					getLocation(thoughtValue, aliasValue, topics, scores);
+				}
 		  	}
+		};
+	}
+
+	function tryTextTokenizer(thoughtValue, aliasValue, topics, scores) {
+		var tokenRequest = makeHttpObject();
+		tokenRequest.open("GET", "https://api.idolondemand.com/1/api/sync/tokenizetext/v1?text="+thoughtValue+"&stemming=false&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f", true);
+		tokenRequest.send(null);
+		tokenRequest.onreadystatechange = function() {
+			if (tokenRequest.readyState == 4) {
+				tokens = tokenRequest.responseText;
+				tokens_obj = JSON.parse(tokens);
+				for (var i = 0; i < tokens_obj.terms.length; i++) {
+					if (tokens_obj.terms[i].weight > 0) {
+						topics.push(tokens_obj.terms[i].term);
+						scores.push(0);
+					}
+				};
+				for (var i = 0; i < topics.length; i++) {
+					console.log(topics[i]);
+				}
+				getLocation(thoughtValue, aliasValue, topics, scores);
+			}
 		};
 	}
 
@@ -155,7 +183,7 @@
 								currScore = scoresArr[topicIndex];
 								objScore = objectScores[ind];
 								console.log(object.id + "    " + insertedObjId);
-								if (objScore * currScore > 0 && object.id != insertedObjId) {
+								if (objScore * currScore >= 0 && object.id != insertedObjId) {
 									// both scores are the same sign
 									
 									results.push(object);
