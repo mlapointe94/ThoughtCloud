@@ -34,37 +34,20 @@
 	}
 
 	function submitThought() {
-
-    var e = document.getElementById('results');
-         if(e.style.display == 'block')
-            e.style.display = 'none';
-         else
-            e.style.display = 'block';
-
-    document.getElementById('numThoughts').innerHTML="CHANGE ME";
-
+	    var e = document.getElementById('results');
+	         if(e.style.display == 'block')
+	            e.style.display = 'none';
+	         else
+	            e.style.display = 'block';
+	    document.getElementById('numThoughts').innerHTML="CHANGE ME";
 		var thoughtValue = document.getElementById('thoughtBox').value;
 		var aliasValue = document.getElementById('aliasBox').value;
-		information = processIdolContent(thoughtValue);
-		var ThoughtObject = Parse.Object.extend("ThoughtObject");
-		var thoughtObject = new ThoughtObject();
-		thoughtObject.save({
-			alias: aliasValue,
-			thought: thoughtValue
-		}, {
-			success: function(thoughtObject) {
-				// alert("SUCCESS");
-			},
-			error: function(thoughtObject, error) {
-				alert("ERROR: " + error.code + " " + error.message);
-			}
-		});
-
-		console.log("Page change");
+		processIdolContent(thoughtValue, aliasValue);
 	}
 
-	function processIdolContent(thoughtValue) {
-		information = {};
+	function processIdolContent(thoughtValue, aliasValue) {
+		topics = [];
+		scores = [];
 		console.log(thoughtValue);
 		var request = makeHttpObject();
 		request.open("GET","https://api.idolondemand.com/1/api/sync/analyzesentiment/v1?text="+thoughtValue+"&language=eng&apikey=d00696e1-ec9b-44e1-8265-591b852e5f0f",true);
@@ -74,14 +57,58 @@
 		  		result = request.responseText;
 				result_obj = JSON.parse(result);
 				for (var i = 0; i < result_obj.positive.length; i++) {
-					information[result_obj.positive[i].topic] = result_obj.positive[i].score
+					topics.push(result_obj.positive[i].topic);
+					scores.push(result_obj.positive[i].score);
 				};
 				for (var i = 0; i < result_obj.negative.length; i++) {
-					information[result_obj.negative[i].topic] = result_obj.negative[i].score
+					topics.push(result_obj.negative[i].topic);
+					scores.push(result_obj.negative[i].score);
 				};
+				pushToParse(thoughtValue, aliasValue, topics, scores);
 		  	}
 		};
-		return information;
+	}
+
+	function pushToParse(thoughtValue, aliasValue, topicsArr, scoresArr) {
+		var ThoughtObject = Parse.Object.extend("ThoughtObject");
+		console.log(topicsArr);
+		console.log(scoresArr);
+		
+		// add constraints to query
+		var query = new Parse.Query(ThoughtObject);
+		for (var i = 0; i < topicsArr.length; i++) {
+			query.equalTo("topics", topics[i]);
+		}
+		
+		// find all thoughts that match
+		query.find({
+			success: function(results) {
+				alert("Successfully retrieved " + results.length + " scores.");
+				// Do something with the returned Parse.Object values
+				for (var i = 0; i < results.length; i++) { 
+					var object = results[i];
+					alert(object.id + ' - ' + object.get('thought'));
+				}
+			},
+			error: function(error) {
+				alert("Error: " + error.code + " " + error.message);
+			}
+		});
+		
+		var thoughtObject = new ThoughtObject();
+		thoughtObject.save({
+			alias: aliasValue,
+			thought: thoughtValue,
+			topics: topicsArr,
+			scores: scoresArr
+		}, {
+			success: function(thoughtObject) {
+				// alert("SUCCESS");
+			},
+			error: function(thoughtObject, error) {
+				alert("ERROR: " + error.code + " " + error.message);
+			}
+		});
 	}
 
 	function makeHttpObject() {
